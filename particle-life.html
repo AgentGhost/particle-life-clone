@@ -54,10 +54,10 @@
                         };
                     };
                     a.vx = (a.vx + fx) * 0.5;
-                    a.x += a.vx;
                     a.vy = (a.vy + fy) * 0.5;
-                    a.y += a.vy;
                     a.vz = (a.vz + fz) * 0.5 * R3D;
+                    a.x += a.vx;
+                    a.y += a.vy;
                     a.z += a.vz;
                     if (a.x <= 0 && a.vx < 0 || a.x >= SIZE && a.vx > 0) {
                         a.vx *= -1;
