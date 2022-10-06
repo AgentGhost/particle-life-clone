@@ -1,9 +1,9 @@
 <html><head></head><body><canvas id="life" width="2000" height="2000"></canvas>
     <script>
-        SIZE = 1000;
-        SPAWNFREEBORDER = SIZE / 5;
-        R3D = true;
-        PARTICLES = [];
+        const SIZE = 1000;
+        const SPAWNFREEBORDER = SIZE / 10;
+        const R3D = true;
+        const PARTICLES = [];
         create = (number, color) => {
             particle = (x, y, z, c) => {
                 return { x: x, y: y, z: z, vx: 0, vy: 0, vz: 0, color: c };
@@ -18,44 +18,43 @@
             }
             return group;
         };
-        GRAVITATIONDISTANCE = SIZE / 4;
-        COLORS = ["yellow", "red", "green", "blue", "purple", "white"];
-        ENTITYNUMBER = Math.round(500 / COLORS.length);
-        ENTITIES = [];
+        const GRAVITATIONDISTANCE = SIZE / 4;
+        const COLORS = ["yellow", "red", "green", "blue", "purple", "white"];
+        const ENTITYNUMBER = Math.round(500 / COLORS.length);
+        const ENTITIES = [];
         for (i = 0; i < COLORS.length; i++) {
             ENTITIES.push(create(ENTITYNUMBER, COLORS[i]));
         };
-        STRENGTHPERCENTAGE = 0.5;
-        GRAVITY = [];
+        const STRENGTHPERCENTAGE = 0.5;
+        const GRAVITY = [];
         for (i = 0; i < COLORS.length ** 2; i++) {
             GRAVITY.push(STRENGTHPERCENTAGE * (Math.random() * 2 - 1));
         };
-        BACKGROUNDCOLOR = "black";
-        ENTITYSCALE = 1;
-        MINIMUMENTITYSIZEOFFSET = false;
-        ENTITYDISTANCEZOOM = 2;
-        LAYER = document.getElementById("life").getContext("2d");
+        const BACKGROUNDCOLOR = "black";
+        const ENTITYSCALE = 1;
+        const MINIMUMENTITYSIZEOFFSET = false;
+        const ENTITYDISTANCEZOOM = 2;
+        const LAYER = document.getElementById("life").getContext("2d");
         update = () => {
             rule = (particles1, particles2, gravity) => {
                 for (let i = 0; i < particles1.length; i++) {
-                    fx = fy = fz = 0;
+                    (f = []).length = 3;
+                    f.fill(0);
                     for (let j = 0; j < particles2.length; j++) {
                         a = particles1[i];
                         b = particles2[j];
-                        dx = a.x - b.x;
-                        dy = a.y - b.y;
-                        dz = (a.z - b.z) * R3D;
-                        distance = Math.sqrt(dx * dx + dy * dy + dz * dz * R3D);
+                        let d = [a.x - b.x, a.y - b.y, a.z - b.z];
+                        distance = Math.sqrt(d[0] ** 2 + d[1] ** 2 + d[2] ** 2 * R3D);
                         if (distance > 0 && distance < GRAVITATIONDISTANCE) {
                             F = gravity / distance;
-                            fx += F * dx;
-                            fy += F * dy;
-                            fz += F * dz;
+                            f[0] += F * d[0];
+                            f[1] += F * d[1];
+                            f[2] += F * d[2];
                         };
                     };
-                    a.vx = (a.vx + fx) * 0.5;
-                    a.vy = (a.vy + fy) * 0.5;
-                    a.vz = (a.vz + fz) * 0.5 * R3D;
+                    a.vx = (a.vx + f[0]) * 0.5;
+                    a.vy = (a.vy + f[1]) * 0.5;
+                    a.vz = (a.vz + f[2]) * 0.5 * R3D;
                     a.x += a.vx;
                     a.y += a.vy;
                     a.z += a.vz;
@@ -74,13 +73,13 @@
                 LAYER.fillStyle = c;
                 LAYER.fillRect(x, y, s, s);
             };
-            for (i = 0; i < COLORS.length; i++) {
-                for (j = 0; j < COLORS.length; j++) {
+            for (let i = 0; i < COLORS.length; i++) {
+                for (let j = 0; j < COLORS.length; j++) {
                     rule(ENTITIES[i], ENTITIES[j], GRAVITY[(i+1)*(j+1)-1]);
                 };
             };
             draw(0, 0, BACKGROUNDCOLOR, SIZE);
-            for (i = 0; i < PARTICLES.length; i++) {
+            for (let i = 0; i < PARTICLES.length; i++) {
                 draw(PARTICLES[i].x, PARTICLES[i].y, PARTICLES[i].color, ENTITYSCALE*(MINIMUMENTITYSIZEOFFSET+ENTITYDISTANCEZOOM*PARTICLES[i].z/SIZE));
             };
             draw(SIZE, 0, "white", 2000);
