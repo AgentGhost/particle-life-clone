@@ -3,46 +3,49 @@
         const SIZE = 1000;
         const SPAWNFREEBORDER = SIZE / 10;
         const R3D = true;
-        const PARTICLES = [];
-        create = (number, color) => {
-            particle = (x, y, z, c) => {
-                return { x: x, y: y, z: z, vx: 0, vy: 0, vz: 0, color: c };
-            };
-            random = () => {
-                return Math.random() * (SIZE - 2 * SPAWNFREEBORDER) + SPAWNFREEBORDER;
-            };
-            group = [];
-            for (let i = 0; i < number; i++) {
-                group.push(particle(random(), random(), random() * R3D, color));
-                PARTICLES.push(group[i]);
-            }
-            return group;
-        };
         const GRAVITATIONDISTANCE = SIZE / 4;
         const COLORS = ["yellow", "red", "green", "blue", "purple", "white"];
         const ENTITYNUMBER = Math.round(500 / COLORS.length);
-        const ENTITIES = [];
-        for (i = 0; i < COLORS.length; i++) {
-            ENTITIES.push(create(ENTITYNUMBER, COLORS[i]));
-        };
         const STRENGTHPERCENTAGE = 0.5;
-        const GRAVITY = [];
-        for (i = 0; i < COLORS.length ** 2; i++) {
-            GRAVITY.push(STRENGTHPERCENTAGE * (Math.random() * 2 - 1));
-        };
         const BACKGROUNDCOLOR = "black";
         const ENTITYSCALE = 1;
         const MINIMUMENTITYSIZEOFFSET = false;
         const ENTITYDISTANCEZOOM = 2;
         const LAYER = document.getElementById("life").getContext("2d");
+        const ENTITIES = [];
+        const GRAVITY = [];
+        
+        init = () => {
+            create = (number, color) => {
+                particle = (x, y, z, c) => {
+                    return { x: x, y: y, z: z, vx: 0, vy: 0, vz: 0, color: c };
+                };
+                random = () => {
+                    return Math.random() * (SIZE - 2 * SPAWNFREEBORDER) + SPAWNFREEBORDER;
+                };
+                group = [];
+                
+                for (let i = 0; i < number; i++) {
+                    group.push(particle(random(), random(), random() * R3D, color));
+                }
+                return group;
+            };
+            for (i = 0; i < COLORS.length; i++) { 
+                ENTITIES.push(create(ENTITYNUMBER, COLORS[i]));
+            };
+            for (i = 0; i < COLORS.length ** 2; i++) { 
+                GRAVITY.push(STRENGTHPERCENTAGE * (Math.random() * 2 - 1));
+            };
+        }
+
         update = () => {
-            rule = (particles1, particles2, gravity) => {
-                for (let i = 0; i < particles1.length; i++) {
+            rule = (entities1, entities2, gravity) => {
+                for (let i = 0; i < entities1.length; i++) {
                     (f = []).length = 3;
                     f.fill(0);
-                    for (let j = 0; j < particles2.length; j++) {
-                        a = particles1[i];
-                        b = particles2[j];
+                    for (let j = 0; j < entities2.length; j++) {
+                        a = entities1[i];
+                        b = entities2[j];
                         let d = [a.x - b.x, a.y - b.y, a.z - b.z];
                         distance = Math.sqrt(d[0] ** 2 + d[1] ** 2 + d[2] ** 2 * R3D);
                         if (distance > 0 && distance < GRAVITATIONDISTANCE) {
@@ -79,13 +82,17 @@
                 };
             };
             draw(0, 0, BACKGROUNDCOLOR, SIZE);
-            for (let i = 0; i < PARTICLES.length; i++) {
-                draw(PARTICLES[i].x, PARTICLES[i].y, PARTICLES[i].color, ENTITYSCALE*(MINIMUMENTITYSIZEOFFSET+ENTITYDISTANCEZOOM*PARTICLES[i].z/SIZE));
+            for (let i = 0; i < ENTITIES.length; i++) {
+                for (let j = 0; j < ENTITYNUMBER; j++) {
+                    draw(ENTITIES[i][j].x, ENTITIES[i][j].y, ENTITIES[i][j].color, ENTITYSCALE*(MINIMUMENTITYSIZEOFFSET+ENTITYDISTANCEZOOM*ENTITIES[i][j].z/SIZE));
+                }
             };
             draw(SIZE, 0, "white", 2000);
             draw(0, SIZE, "white", 2000);
             requestAnimationFrame(update);
         };
+
+        init();
         update();
     </script>
 </body></html>
